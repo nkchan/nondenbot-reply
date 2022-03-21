@@ -4,7 +4,7 @@ frameworkVersion: '2'
 
 provider:
   name: aws
-  runtime: go1.17
+  runtime: go1.x
   lambdaHashingVersion: 20201221
   stage: ${opt:stage, self:custom.defaultStage}
   region: ap-northeast-1
