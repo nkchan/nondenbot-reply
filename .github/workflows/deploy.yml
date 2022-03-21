@@ -9,25 +9,20 @@ jobs:
     name: deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-
-      - name: make serverless yml channel
-        run: python3 replace.py
-        env:
-          CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
-          GROUPID: ${{ secrets.LINE_GROUPID }}
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.8' # The Go version to download (if necessary) and use.
 
       - uses: actions/setup-node@v2
       - name: npm install
-        run: npm install -g serverless
-      - name: install  serverless-python-requirements
-        run: sls plugin install -n serverless-python-requirements
+        run: npm install -g serverless@2.64.1
 
-      - name: requirements install
-        run: sh requirements.sh
-     
+      - name: make build
+        run: make build
+
       - name: serverless deploy
-        run: sls deploy
+        run: sls deploy --stage prod
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

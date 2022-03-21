@@ -21,15 +21,9 @@ package:
     - ./bin/**
 
 functions:
-  hello:
+  bot:
     handler: bin/hello
     events:
       - httpApi:
           path: /hello
-          method: get
-  world:
-    handler: bin/world
-    events:
-      - httpApi:
-          path: /world
           method: get
