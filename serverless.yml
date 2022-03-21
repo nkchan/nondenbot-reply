@@ -25,5 +25,5 @@ functions:
     handler: bin/bot
     events:
       - httpApi:
-          path: /hello
+          path: /reply-bot
           method: get
