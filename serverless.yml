@@ -22,7 +22,7 @@ package:
 
 functions:
   bot:
-    handler: bin/hello
+    handler: bin/bot
     events:
       - httpApi:
           path: /hello
