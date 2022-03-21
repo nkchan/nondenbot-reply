@@ -1,4 +1,4 @@
-service: nondenbot-reply-${self:provider.stage}
+service: nondenbot-reply
 
 frameworkVersion: '2'
 
