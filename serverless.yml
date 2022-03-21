@@ -1,0 +1,35 @@
+service: nondenbot-reply-${self:provider.stage}
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: go1.x
+  lambdaHashingVersion: 20201221
+  stage: ${opt:stage, self:custom.defaultStage}
+  region: ap-northeast-1
+
+custom:
+  defaultStage: stage
+  environment:
+    stage: ${file(../env/stage.yml)}
+    prod: ${file(../env/prod.yml)}
+
+package:
+  patterns:
+    - '!./**'
+    - ./bin/**
+
+functions:
+  hello:
+    handler: bin/hello
+    events:
+      - httpApi:
+          path: /hello
+          method: get
+  world:
+    handler: bin/world
+    events:
+      - httpApi:
+          path: /world
+          method: get
