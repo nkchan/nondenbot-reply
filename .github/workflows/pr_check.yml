@@ -7,17 +7,19 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.8' # The Go version to download (if necessary) and use.
 
       - uses: actions/setup-node@v2
       - name: npm install
-        run: npm install -g serverless
+        run: npm install -g serverless@2.64.1
 
       - name: make build
         run: make build
 
       - name: serverless deploy
-        run: sls deploy
+        run: sls deploy --stage dev
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
