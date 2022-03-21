@@ -1,4 +1,4 @@
-module github.com/nkchan/nondenbot-reply/hello
+module github.com/nkchan/nondenbot-reply/bot
 
 go 1.17
 
