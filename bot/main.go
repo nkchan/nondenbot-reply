@@ -34,6 +34,11 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		log.Fatal(err)
 	}
 
+	return events.APIGatewayProxyResponse{
+		Body:       "",
+		StatusCode: 200,
+	}, nil
+
 }
 func ParseRequest(channelSecret string, r events.APIGatewayProxyRequest) ([]*linebot.Event, error) {
 	if !ValidateSignature(channelSecret, r.Headers["x-line-signature"], []byte(r.Body)) {
