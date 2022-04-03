@@ -66,9 +66,8 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	log.Print("start create reply message")
-	var tmpReplyMessage string
 	message := strings.Split(myLineRequest.Events[0].Message.Text, " ")
-	if message[0] == "bot" {
+	if message[0] == "bot" && len(message) >= 2 {
 		if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(message[1])).Do(); err != nil {
 			log.Fatal(err)
 		}
