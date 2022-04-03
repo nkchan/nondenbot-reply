@@ -13,7 +13,7 @@ provider:
 custom:
   defaultStage: stage
   environment:
-    stage: ${file(./env/stage.yml)}
+    dev: ${file(./env/stage.yml)}
     prod: ${file(./env/prod.yml)}
 
 package:
