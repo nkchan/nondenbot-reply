@@ -24,6 +24,6 @@ functions:
   bot:
     handler: bin/bot
     events:
-      - http:
+      - httpApi:
           path: /reply-bot
-          method: post
+          method: POST
