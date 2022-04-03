@@ -26,4 +26,4 @@ functions:
     events:
       - httpApi:
           path: /reply-bot
-          method: get
+          method: post
