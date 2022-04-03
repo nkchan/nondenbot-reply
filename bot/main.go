@@ -79,7 +79,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(tmpReplyMessage)).Do(); err != nil {
 		log.Fatal(err)
 	}
-
+	log.Print(myLineRequest)
 	log.Print(err)
 
 	return events.APIGatewayProxyResponse{
