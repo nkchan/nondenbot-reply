@@ -18,8 +18,8 @@ type Response events.APIGatewayProxyResponse
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	bot, err := linebot.New(
-		os.Getenv("LINE_CHANNE_TOKEN"),
 		os.Getenv("LINE_CHANNEL_SECRET"),
+		os.Getenv("LINE_CHANNE_TOKEN"),
 	)
 	// エラーに値があればログに出力し終了する
 	if err != nil {

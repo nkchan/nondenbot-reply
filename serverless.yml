@@ -8,13 +8,14 @@ provider:
   lambdaHashingVersion: 20201221
   stage: ${opt:stage, self:custom.defaultStage}
   region: ap-northeast-1
-  profile: ${self:custom.environment.${self:provider.stage}}
+   environment:
+    LINE_CHANNE_TOKEN: LINE_CHANNE_TOKEN  
+    LINE_CHANNEL_SECRET: LINE_CHANNEL_SECRET
+  
 
 custom:
   defaultStage: stage
-  environment:
-    dev: ${file(./env/stage.yml)}
-    prod: ${file(./env/prod.yml)}
+
 
 package:
   patterns:
