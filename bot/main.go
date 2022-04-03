@@ -1,13 +1,8 @@
 package main
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -58,13 +53,6 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		os.Getenv("LINE_ACCESS_TOKEN"),
 	)
 
-	if !validateSignature(os.Getenv("LINE_CHANNEL_SECRET"), request.Headers["X-Line-Signature"], []byte(request.Body)) {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       fmt.Sprintf(`{"message":"%s"}`+"\n", linebot.ErrInvalidSignature.Error()),
-		}, nil
-	}
-
 	log.Print(request.Headers)
 	log.Print(request.Body)
 	log.Print(bot.GetBotInfo().Do())
@@ -90,21 +78,6 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		StatusCode: 200,
 	}, nil
 
-}
-
-func validateSignature(channelSecret string, signature string, body []byte) bool {
-	decoded, err := base64.StdEncoding.DecodeString(signature)
-	if err != nil {
-		return false
-	}
-
-	hash := hmac.New(sha256.New, []byte(channelSecret))
-	_, err = hash.Write(body)
-	if err != nil {
-		return false
-	}
-
-	return hmac.Equal(decoded, hash.Sum(nil))
 }
 
 func main() {
