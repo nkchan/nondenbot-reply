@@ -19,10 +19,14 @@ jobs:
       - name: make build
         run: make build
 
+      - name: make serverless yml channel
+        run: python3 replace.py
+        env:
+          LINE_CHANNEL_SECRET: ${{ secrets.LINE_BOT_CHANNEL_SECRET_STAGE }}
+          LINE_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN_STAGE }}
+
       - name: serverless deploy
         run: sls deploy --stage dev
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          LINE_CHANNEL_SECRET: ${{ secrets.LINE_BOT_CHANNEL_SECRET_STAGE }}
-          LINE_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN_STAGE }}
