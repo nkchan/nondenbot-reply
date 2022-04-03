@@ -1,9 +1,8 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
-	"log"
+	"errors"
+	"fmt"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -13,31 +12,26 @@ import (
 
 type Response events.APIGatewayProxyResponse
 
-func Handler(ctx context.Context) (string, error) {
-
-	body, err := json.Marshal(map[string]interface{}{
-		"message": "Go Serverless v1.0! Your function executed successfully! presents by nkchan",
-	})
+func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	line := Line{}
+	err := line.New(
+		os.Getenv("CHANNEL_SECRET"),
+		os.Getenv("CHANNEL_TOKEN"))
 	if err != nil {
-		return "error", err
+		fmt.Println(err)
 	}
-
-	log.Println(body)
-
-	bot, err := linebot.New(
-		os.Getenv("LINE_BOT_CHANNEL_SECRET"),
-		os.Getenv("LINE_BOT_CHANNEL_TOKEN"),
-	)
+	eve, err := ParseRequest(line.ChannelSecret, request)
 	if err != nil {
-		log.Fatal(err)
+		status := 200
+		if err == linebot.ErrInvalidSignature {
+			status = 400
+		} else {
+			status = 500
+		}
+		return events.APIGatewayProxyResponse{StatusCode: status}, errors.New("Bat Request")
 	}
-	var message_text string = "hoge"
-	message := linebot.NewTextMessage(message_text)
-
-	if _, err := bot.BroadcastMessage(message).Do(); err != nil {
-		log.Fatal(err)
-	}
-	return message_text, nil
+	line.EventRouter(eve)
+	return events.APIGatewayProxyResponse{Body: request.Body, StatusCode: 200}, nil
 }
 
 func main() {
