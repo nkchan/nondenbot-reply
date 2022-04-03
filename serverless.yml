@@ -11,6 +11,7 @@ provider:
   environment:
     LINE_CHANNE_TOKEN: LINE_CHANNE_TOKEN  
     LINE_CHANNEL_SECRET: LINE_CHANNEL_SECRET
+    LINE_ACCESS_TOKEN: LINE_ACCESS_TOKEN
 
 custom:
   defaultStage: stage
