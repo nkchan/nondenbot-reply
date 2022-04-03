@@ -35,7 +35,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	return events.APIGatewayProxyResponse{
-		Body:       "",
+		Body:       "aaa",
 		StatusCode: 200,
 	}, nil
 
