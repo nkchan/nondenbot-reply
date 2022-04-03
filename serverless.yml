@@ -1,4 +1,4 @@
-service: nondenbot-reply-${self:provider.stage}
+service: nondenbot-reply
 
 frameworkVersion: '2'
 
@@ -8,12 +8,13 @@ provider:
   lambdaHashingVersion: 20201221
   stage: ${opt:stage, self:custom.defaultStage}
   region: ap-northeast-1
+  environment:
+    LINE_CHANNEL_SECRET: LINE_CHANNEL_ACCESS_TOKEN_STRING
+    LINE_ACCESS_TOKEN:  LINE_ACCESS_TOKEN_STRING
 
 custom:
   defaultStage: stage
-  environment:
-    stage: ${file(./env/stage.yml)}
-    prod: ${file(./env/prod.yml)}
+
 
 package:
   patterns:
@@ -26,4 +27,4 @@ functions:
     events:
       - httpApi:
           path: /reply-bot
-          method: get
+          method: POST

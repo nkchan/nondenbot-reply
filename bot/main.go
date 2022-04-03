@@ -1,43 +1,84 @@
 package main
 
 import (
-	"bytes"
-	"context"
 	"encoding/json"
+	"log"
+	"os"
+	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/line/line-bot-sdk-go/linebot"
 )
 
-// Response is of type APIGatewayProxyResponse since we're leveraging the
-// AWS Lambda Proxy Request functionality (default behavior)
-//
-// https://serverless.com/framework/docs/providers/aws/events/apigateway/#lambda-proxy-integration
 type Response events.APIGatewayProxyResponse
 
-// Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(ctx context.Context) (Response, error) {
-	var buf bytes.Buffer
+func UnmarshalLineRequest(data []byte) (LineRequest, error) {
+	var r LineRequest
+	err := json.Unmarshal(data, &r)
+	return r, err
+}
 
-	body, err := json.Marshal(map[string]interface{}{
-		"message": "Go Serverless v1.0! Your function executed successfully! presents by nkchan",
-	})
+func (r *LineRequest) Marshal() ([]byte, error) {
+	return json.Marshal(r)
+}
+
+type LineRequest struct {
+	Events      []Event `json:"events"`
+	Destination string  `json:"destination"`
+}
+
+type Event struct {
+	Type       string  `json:"type"`
+	ReplyToken string  `json:"replyToken"`
+	Source     Source  `json:"source"`
+	Timestamp  int64   `json:"timestamp"`
+	Message    Message `json:"message"`
+}
+
+type Message struct {
+	Type string `json:"type"`
+	ID   string `json:"id"`
+	Text string `json:"text"`
+}
+
+type Source struct {
+	UserID string `json:"userId"`
+	Type   string `json:"type"`
+}
+
+func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	bot, err := linebot.New(
+		os.Getenv("LINE_CHANNEL_SECRET"),
+		os.Getenv("LINE_ACCESS_TOKEN"),
+	)
+
+	log.Print(request.Headers)
+	log.Print(request.Body)
+	log.Print(bot.GetBotInfo().Do())
+	log.Print(err)
+
+	log.Print("start json parse")
+	myLineRequest, err := UnmarshalLineRequest([]byte(request.Body))
 	if err != nil {
-		return Response{StatusCode: 404}, err
-	}
-	json.HTMLEscape(&buf, body)
-
-	resp := Response{
-		StatusCode:      200,
-		IsBase64Encoded: false,
-		Body:            buf.String(),
-		Headers: map[string]string{
-			"Content-Type":           "application/json",
-			"X-MyCompany-Func-Reply": "hello-handler",
-		},
+		log.Fatal(err)
 	}
 
-	return resp, nil
+	log.Print("start create reply message")
+	message := strings.Split(myLineRequest.Events[0].Message.Text, " ")
+	if message[0] == "bot" && len(message) >= 2 {
+		if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(message[1])).Do(); err != nil {
+			log.Fatal(err)
+		}
+		log.Print(myLineRequest)
+		log.Print(err)
+	}
+	return events.APIGatewayProxyResponse{
+		Body:       "aaa",
+		StatusCode: 200,
+	}, nil
+
 }
 
 func main() {
