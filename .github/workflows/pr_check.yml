@@ -24,6 +24,5 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          LINE_CHANNE_TOKEN:  ${{ secrets.LINE_CHANNEL_TOKEN_STAGE }}
           LINE_CHANNEL_SECRET: ${{ secrets.LINE_BOT_CHANNEL_SECRET_STAGE }}
-          LINE_ACCESS_TOKEN: ${{ secrets.LINE_BOT_ACCESS_TOKEN_STAGE }}
+          LINE_ACCESS_TOKEN: ${{ secrets.LINE_ACCESS_TOKEN_STAGE }}
