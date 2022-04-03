@@ -69,11 +69,13 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		}, nil
 	}
 
+	log.Print("start json parse")
 	myLineRequest, err := UnmarshalLineRequest([]byte(request.Body))
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	log.Print("start create reply message")
 	var tmpReplyMessage string
 	tmpReplyMessage = "回答：" + myLineRequest.Events[0].Message.Text
 	if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(tmpReplyMessage)).Do(); err != nil {
