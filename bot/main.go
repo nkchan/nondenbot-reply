@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -66,13 +67,14 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	log.Print("start create reply message")
 	var tmpReplyMessage string
-	tmpReplyMessage = "回答：" + myLineRequest.Events[0].Message.Text
-	if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(tmpReplyMessage)).Do(); err != nil {
-		log.Fatal(err)
+	message := strings.Split(myLineRequest.Events[0].Message.Text, " ")
+	if message[0] == "bot" {
+		if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(tmpReplyMessage)).Do(); err != nil {
+			log.Fatal(err)
+		}
+		log.Print(myLineRequest)
+		log.Print(err)
 	}
-	log.Print(myLineRequest)
-	log.Print(err)
-
 	return events.APIGatewayProxyResponse{
 		Body:       "aaa",
 		StatusCode: 200,
