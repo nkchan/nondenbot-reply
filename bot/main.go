@@ -57,10 +57,6 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		os.Getenv("LINE_CHANNEL_SECRET"),
 		os.Getenv("LINE_ACCESS_TOKEN"),
 	)
-	log.Print(request.Headers)
-	log.Print(request.Body)
-	log.Print(bot.GetBotInfo().Do())
-	log.Print(err)
 
 	if !validateSignature(os.Getenv("LINE_CHANNEL_SECRET"), request.Headers["X-Line-Signature"], []byte(request.Body)) {
 		return events.APIGatewayProxyResponse{
@@ -68,6 +64,11 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 			Body:       fmt.Sprintf(`{"message":"%s"}`+"\n", linebot.ErrInvalidSignature.Error()),
 		}, nil
 	}
+
+	log.Print(request.Headers)
+	log.Print(request.Body)
+	log.Print(bot.GetBotInfo().Do())
+	log.Print(err)
 
 	log.Print("start json parse")
 	myLineRequest, err := UnmarshalLineRequest([]byte(request.Body))
