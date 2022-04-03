@@ -65,6 +65,13 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		log.Fatal(err)
 	}
 
+	if len(myLineRequest.Events) == 0 {
+		return events.APIGatewayProxyResponse{
+			Body:       "aaa",
+			StatusCode: 200,
+		}, nil
+	}
+
 	log.Print("start create reply message")
 	message := strings.Split(myLineRequest.Events[0].Message.Text, " ")
 	if message[0] == "bot" && len(message) >= 2 {
