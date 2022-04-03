@@ -80,6 +80,8 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		log.Fatal(err)
 	}
 
+	log.Print(err)
+
 	return events.APIGatewayProxyResponse{
 		Body:       "aaa",
 		StatusCode: 200,
