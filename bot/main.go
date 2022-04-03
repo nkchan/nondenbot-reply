@@ -5,6 +5,8 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"log"
+	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -14,6 +16,15 @@ import (
 type Response events.APIGatewayProxyResponse
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	bot, err := linebot.New(
+		os.Getenv("LINE_CHANNEL_SECRET"),
+		os.Getenv("LINE_ACCESS_TOKEN"),
+	)
+	log.Print(request.Headers)
+	log.Print(request.Body)
+	log.Print(bot.GetBotInfo().Do())
+	log.Print(err)
 
 	return events.APIGatewayProxyResponse{
 		Body:       "aaa",
