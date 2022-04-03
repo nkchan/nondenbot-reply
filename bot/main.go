@@ -5,8 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"log"
-	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -16,23 +14,6 @@ import (
 type Response events.APIGatewayProxyResponse
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-
-	bot, err := linebot.New(
-		os.Getenv("LINE_CHANNEL_SECRET"),
-		os.Getenv("LINE_ACCESS_TOKEN"),
-	)
-	// エラーに値があればログに出力し終了する
-	if err != nil {
-		log.Fatal(err)
-	}
-	result := "hoge"
-
-	// テキストメッセージを生成する
-	message := linebot.NewTextMessage(result)
-	// テキストメッセージを友達登録しているユーザー全員に配信する
-	if _, err := bot.BroadcastMessage(message).Do(); err != nil {
-		log.Fatal(err)
-	}
 
 	return events.APIGatewayProxyResponse{
 		Body:       "aaa",
