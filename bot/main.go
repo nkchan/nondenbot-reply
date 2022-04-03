@@ -5,7 +5,9 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -14,6 +16,40 @@ import (
 )
 
 type Response events.APIGatewayProxyResponse
+
+func UnmarshalLineRequest(data []byte) (LineRequest, error) {
+	var r LineRequest
+	err := json.Unmarshal(data, &r)
+	return r, err
+}
+
+func (r *LineRequest) Marshal() ([]byte, error) {
+	return json.Marshal(r)
+}
+
+type LineRequest struct {
+	Events      []Event `json:"events"`
+	Destination string  `json:"destination"`
+}
+
+type Event struct {
+	Type       string  `json:"type"`
+	ReplyToken string  `json:"replyToken"`
+	Source     Source  `json:"source"`
+	Timestamp  int64   `json:"timestamp"`
+	Message    Message `json:"message"`
+}
+
+type Message struct {
+	Type string `json:"type"`
+	ID   string `json:"id"`
+	Text string `json:"text"`
+}
+
+type Source struct {
+	UserID string `json:"userId"`
+	Type   string `json:"type"`
+}
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
@@ -26,26 +62,32 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	log.Print(bot.GetBotInfo().Do())
 	log.Print(err)
 
+	if !validateSignature(os.Getenv("LINE_CHANNEL_SECRET"), request.Headers["X-Line-Signature"], []byte(request.Body)) {
+		return events.APIGatewayProxyResponse{
+			StatusCode: http.StatusBadRequest,
+			Body:       fmt.Sprintf(`{"message":"%s"}`+"\n", linebot.ErrInvalidSignature.Error()),
+		}, nil
+	}
+
+	myLineRequest, err := UnmarshalLineRequest([]byte(request.Body))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var tmpReplyMessage string
+	tmpReplyMessage = "回答：" + myLineRequest.Events[0].Message.Text
+	if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(tmpReplyMessage)).Do(); err != nil {
+		log.Fatal(err)
+	}
+
 	return events.APIGatewayProxyResponse{
 		Body:       "aaa",
 		StatusCode: 200,
 	}, nil
 
 }
-func ParseRequest(channelSecret string, r events.APIGatewayProxyRequest) ([]*linebot.Event, error) {
-	if !ValidateSignature(channelSecret, r.Headers["x-line-signature"], []byte(r.Body)) {
-		return nil, linebot.ErrInvalidSignature
-	}
-	request := &struct {
-		Events []*linebot.Event `json:"events"`
-	}{}
-	if err := json.Unmarshal([]byte(r.Body), request); err != nil {
-		return nil, err
-	}
-	return request.Events, nil
-}
 
-func ValidateSignature(channelSecret string, signature string, body []byte) bool {
+func validateSignature(channelSecret string, signature string, body []byte) bool {
 	decoded, err := base64.StdEncoding.DecodeString(signature)
 	if err != nil {
 		return false
