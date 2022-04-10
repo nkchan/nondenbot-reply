@@ -54,6 +54,10 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		os.Getenv("LINE_ACCESS_TOKEN"),
 	)
 
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	log.Print(request.Headers)
 	log.Print(request.Body)
 	log.Print(bot.GetBotInfo().Do())
