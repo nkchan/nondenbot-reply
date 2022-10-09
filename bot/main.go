@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"strings"
-
+	"math/rand"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -21,6 +21,12 @@ func UnmarshalLineRequest(data []byte) (LineRequest, error) {
 
 func (r *LineRequest) Marshal() ([]byte, error) {
 	return json.Marshal(r)
+}
+
+func RandomChoise(data []string) (bool) {
+	if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(rand.Intn(len(data)))).Do(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 type LineRequest struct {
@@ -74,6 +80,10 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	log.Print("start create reply message")
 	message := strings.Split(myLineRequest.Events[0].Message.Text, " ")
+	if message[0] == "bot" && message[1] == "rand" {
+		result = RandomChoise(message[2:])
+	}
+
 	if message[0] == "bot" && len(message) >= 2 {
 		if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(message[1])).Do(); err != nil {
 			log.Fatal(err)
