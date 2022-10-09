@@ -24,7 +24,7 @@ func (r *LineRequest) Marshal() ([]byte, error) {
 }
 
 
-func RandomChoise(data []string) (string) {
+func RandomChoice(data []string) (string) {
 	log.Print(data)
 	z := rand.Intn(len(data))
 	return data[z]
@@ -89,7 +89,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	if message[0] == "bot" {
 		if message[1] == "rand" {
-			result = RandomChoise(message[2:])
+			result = RandomChoice(message[2:])
 			log.Print("Start rand func")
 		} else if len(message) >= 2 {
 			result = message[1]
