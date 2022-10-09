@@ -83,10 +83,13 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	if message[0] == "bot" && message[1] == "rand" {
 		result = RandomChoise(message[2:])
+		log.Print("Start rand func")
+		
 	}
 
 	if message[0] == "bot" && len(message) >= 2 {
 		result = message[1]
+		log.Print("Start Reply Func")
 	}
 
 	if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(result)).Do(); err != nil {
