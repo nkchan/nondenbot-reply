@@ -25,7 +25,9 @@ func (r *LineRequest) Marshal() ([]byte, error) {
 
 
 func RandomChoise(data []string) (string) {
-	return data[rand.Intn(len(data))]
+	log.Print(data)
+	z := rand.Intn(len(data))
+	return data[z]
 }
 
 type LineRequest struct {
@@ -59,6 +61,9 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		os.Getenv("LINE_ACCESS_TOKEN"),
 	)
 
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Print(request.Headers)
 	log.Print(request.Body)
 	log.Print(bot.GetBotInfo().Do())
@@ -81,15 +86,15 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	message := strings.Split(myLineRequest.Events[0].Message.Text, " ")
 	var result = "" 
 
-	if message[0] == "bot" && message[1] == "rand" {
-		result = RandomChoise(message[2:])
-		log.Print("Start rand func")
-		
-	}
 
-	if message[0] == "bot" && len(message) >= 2 {
-		result = message[1]
-		log.Print("Start Reply Func")
+	if message[0] == "bot" {
+		if message[1] == "rand" {
+			result = RandomChoise(message[2:])
+			log.Print("Start rand func")
+		} else if len(message) >= 2 {
+			result = message[1]
+			log.Print("Start Reply Func")
+		} else {}
 	}
 
 	if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(result)).Do(); err != nil {
