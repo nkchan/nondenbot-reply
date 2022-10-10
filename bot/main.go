@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"math/rand"
 	"os"
 	"strings"
-	"math/rand"
+	"time"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -23,9 +25,8 @@ func (r *LineRequest) Marshal() ([]byte, error) {
 	return json.Marshal(r)
 }
 
-
-func RandomChoice(data []string) (string) {
-	log.Print(data)
+func RandomChoice(data []string) string {
+	rand.Seed(time.Now().UnixNano())
 	z := rand.Intn(len(data))
 	return data[z]
 }
@@ -84,8 +85,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	log.Print("start create reply message")
 	message := strings.Split(myLineRequest.Events[0].Message.Text, " ")
-	var result = "" 
-
+	var result = ""
 
 	if message[0] == "bot" {
 		if message[1] == "rand" {
@@ -94,7 +94,8 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		} else if len(message) >= 2 {
 			result = message[1]
 			log.Print("Start Reply Func")
-		} else {}
+		} else {
+		}
 	}
 
 	if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(result)).Do(); err != nil {
