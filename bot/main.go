@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"strings"
-
+	"math/rand"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -21,6 +21,13 @@ func UnmarshalLineRequest(data []byte) (LineRequest, error) {
 
 func (r *LineRequest) Marshal() ([]byte, error) {
 	return json.Marshal(r)
+}
+
+
+func RandomChoice(data []string) (string) {
+	log.Print(data)
+	z := rand.Intn(len(data))
+	return data[z]
 }
 
 type LineRequest struct {
@@ -54,6 +61,9 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		os.Getenv("LINE_ACCESS_TOKEN"),
 	)
 
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Print(request.Headers)
 	log.Print(request.Body)
 	log.Print(bot.GetBotInfo().Do())
@@ -74,13 +84,25 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	log.Print("start create reply message")
 	message := strings.Split(myLineRequest.Events[0].Message.Text, " ")
-	if message[0] == "bot" && len(message) >= 2 {
-		if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(message[1])).Do(); err != nil {
-			log.Fatal(err)
-		}
-		log.Print(myLineRequest)
-		log.Print(err)
+	var result = "" 
+
+
+	if message[0] == "bot" {
+		if message[1] == "rand" {
+			result = RandomChoice(message[2:])
+			log.Print("Start rand func")
+		} else if len(message) >= 2 {
+			result = message[1]
+			log.Print("Start Reply Func")
+		} else {}
 	}
+
+	if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(result)).Do(); err != nil {
+		log.Fatal(err)
+	}
+	log.Print(myLineRequest)
+	log.Print(err)
+
 	return events.APIGatewayProxyResponse{
 		Body:       "aaa",
 		StatusCode: 200,
