@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 	"time"
-
+  "./lib"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -23,12 +23,6 @@ func UnmarshalLineRequest(data []byte) (LineRequest, error) {
 
 func (r *LineRequest) Marshal() ([]byte, error) {
 	return json.Marshal(r)
-}
-
-func RandomChoice(data []string) string {
-	rand.Seed(time.Now().UnixNano())
-	z := rand.Intn(len(data))
-	return data[z]
 }
 
 type LineRequest struct {
