@@ -1,5 +1,5 @@
 module github.com/nkchan/nondenbot-reply/bot
-
+module lib
 go 1.17
 
 require (

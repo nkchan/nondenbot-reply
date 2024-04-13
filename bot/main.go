@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 	"time"
-  "./lib"
+  "lib/rand"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/line/line-bot-sdk-go/linebot"
