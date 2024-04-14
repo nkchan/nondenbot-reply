@@ -1,4 +1,7 @@
 package lib
+import (
+	"math/rand"
+)
 
 func RandomChoice(data []string) string {
 	rand.Seed(time.Now().UnixNano())

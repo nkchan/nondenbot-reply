@@ -3,11 +3,10 @@ package main
 import (
 	"encoding/json"
 	"log"
-	"math/rand"
 	"os"
 	"strings"
 	"time"
-  "rand"
+  "rand-string"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/line/line-bot-sdk-go/linebot"
