@@ -3,10 +3,8 @@ package main
 import (
 	"encoding/json"
 	"log"
-	"math/rand"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -23,12 +21,6 @@ func UnmarshalLineRequest(data []byte) (LineRequest, error) {
 
 func (r *LineRequest) Marshal() ([]byte, error) {
 	return json.Marshal(r)
-}
-
-func RandomChoice(data []string) string {
-	rand.Seed(time.Now().UnixNano())
-	z := rand.Intn(len(data))
-	return data[z]
 }
 
 type LineRequest struct {
@@ -52,7 +44,17 @@ type Message struct {
 
 type Source struct {
 	UserID string `json:"userId"`
+	GroupID string `json:"GroupId"`
 	Type   string `json:"type"`
+}
+
+func (data Source) GetId() string{
+	if data.Type == "user" {
+		return data.UserID 
+	} else if data.Type == "group" {
+		return data.GroupID 
+	}
+	return "error"
 }
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -85,18 +87,23 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	log.Print("start create reply message")
 	message := strings.Split(myLineRequest.Events[0].Message.Text, " ")
+	source := myLineRequest.Events[0].Source
 	var result = ""
 
 	if message[0] == "bot" {
-		if message[1] == "rand" {
+		switch message[1] {
+		case "rand":
 			result = RandomChoice(message[2:])
-			log.Print("Start rand func")
-		} else if len(message) >= 2 {
-			result = message[1]
-			log.Print("Start Reply Func")
-		} else {
+
+		case "id":
+			result = source.GetId()
+
+		default:
+			result = "Please enter rand or id"
 		}
+		} else {
 	}
+	
 
 	if _, err = bot.ReplyMessage(myLineRequest.Events[0].ReplyToken, linebot.NewTextMessage(result)).Do(); err != nil {
 		log.Fatal(err)
