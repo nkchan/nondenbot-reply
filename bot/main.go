@@ -48,8 +48,8 @@ type Source struct {
 	Type   string `json:"type"`
 }
 
-func GetId(data Source) string {
-	if data.Tyep == "user" {
+func (data Source) GetId() string{
+	if data.Type == "user" {
 		return data.UserID 
 	} else if data.Type == "group" {
 		return data.GroupID 
@@ -87,7 +87,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	log.Print("start create reply message")
 	message := strings.Split(myLineRequest.Events[0].Message.Text, " ")
-	data := myLineRequest.Events[0].Source
+	source := myLineRequest.Events[0].Source
 	var result = ""
 
 	if message[0] == "bot" {
@@ -96,10 +96,10 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 			result = RandomChoice(message[2:])
 
 		case "id":
-			result = GetId(data)
+			result = source.GetId()
 
 		default:
-			result = "fuga"
+			result = "Please enter rand or id"
 		}
 		} else {
 	}
