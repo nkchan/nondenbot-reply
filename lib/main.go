@@ -2,14 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/line/line-bot-sdk-go/linebot"
+	"lib"
 	"log"
 	"os"
 	"strings"
 	"time"
-  "./lib"
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/line/line-bot-sdk-go/linebot"
 )
 
 type Response events.APIGatewayProxyResponse
